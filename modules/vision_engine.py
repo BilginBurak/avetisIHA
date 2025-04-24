@@ -17,8 +17,8 @@ def process_frame(frame):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
     # Belirli bir renk aralığı (örnek: mavi)
-    lower = np.array([0, 100, 100])
-    upper = np.array([10, 255, 255])
+    lower = np.array([100, 150, 0])
+    upper = np.array([140, 255, 255])
     mask = cv2.inRange(hsv, lower, upper)
 
     # Kontur bul
@@ -29,7 +29,7 @@ def process_frame(frame):
         c = max(contours, key=cv2.contourArea)
         area = cv2.contourArea(c)
 
-        if area > 100:  # Gürültüleri engellemek için eşik
+        if area > 500:  # Gürültüleri engellemek için eşik
             M = cv2.moments(c)
             if M["m00"] != 0:
                 cx = int(M["m10"] / M["m00"])
