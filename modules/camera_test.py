@@ -1,7 +1,6 @@
 import cv2
 
 cap = cv2.VideoCapture(0)  # Gerekirse 1 veya 2 yap, ya da CSI için özel pipeline
-
 if not cap.isOpened():
     print("Kamera açılamadı!")
     exit()
