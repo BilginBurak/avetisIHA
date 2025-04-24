@@ -20,3 +20,4 @@ def main_loop():
             break
 
     cv2.destroyAllWindows()
+main_loop()
