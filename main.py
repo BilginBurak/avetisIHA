@@ -1,24 +1,20 @@
-from modules.camera_input import get_camera_frame
+from modules.camera_input import get_camera_stream
 from modules.vision_engine import process_frame
 import cv2
 
-def main_loop():
-    while True:
-        frame = get_camera_frame()
-        if frame is None:
-            continue
+def main():
+    for frame in get_camera_stream():
+        result = process_frame(frame, area_threshold=500, debug=True)
 
-        result = process_frame(frame)
+        for detection in result["detections"]:
+            print(f"Detected {detection['color']} {detection['shape']} at {detection['center']}")
 
-        if result["detected"]:
-            x, y = result["center"]
-            cv2.circle(frame, (x, y), 10, (0, 255, 0), -1)
-            cv2.putText(frame, f"Area: {result['area']}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2)
+        # Görüntüyü göster
+        if result["annotated_frame"] is not None:
+            cv2.imshow("Detection", result["annotated_frame"])
 
-        cv2.imshow("Görüntü", frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-
-    cv2.destroyAllWindows()
-main_loop()
+if __name__ == "__main__":
+    main()
