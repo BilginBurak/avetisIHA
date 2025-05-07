@@ -20,7 +20,7 @@ def color_score(mask, contour):
     return min(mean_val / 255, 1.0)
 
 # Kamerayı başlatır
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture("rtsp://192.168.144.25:8554/main.264")
 if not cap.isOpened():
     print("Hata: Kamera açılamadı.")
     exit()
