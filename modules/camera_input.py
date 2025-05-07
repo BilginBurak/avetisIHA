@@ -1,7 +1,7 @@
 import cv2
 
 
-def get_camera_stream(camera_index=0, width=640, height=480):
+def get_camera_stream(camera_index, width=640, height=480):
     """
     Kamera akışını başlatır ve her kareyi yield eder.
 
