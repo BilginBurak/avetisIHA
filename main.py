@@ -1,24 +1,26 @@
-from modules.camera_input import get_camera_frame
+from modules.camera_input_siyi import get_camera_stream
 from modules.vision_engine import process_frame
 import cv2
 
-def main_loop():
-    while True:
-        frame = get_camera_frame()
-        if frame is None:
-            continue
+def main():
+    rtsp_url = "rtsp://192.168.144.25:8554/main.264"
+    udp_ip = "192.168.144.100"  # Alıcı cihazın IP adresi
+    udp_port = 5005  # Alıcı cihazın portu
+    for frame in get_camera_stream(rtsp_url, udp_ip, udp_port):
+        result = process_frame(frame, area_threshold=500, debug=True)
 
-        result = process_frame(frame)
+        for detection in result["detections"]:
+            print(f"Detected {detection['color']} {detection['shape']} at {detection['center']}")
 
-        if result["detected"]:
-            x, y = result["center"]
-            cv2.circle(frame, (x, y), 10, (0, 255, 0), -1)
-            cv2.putText(frame, f"Area: {result['area']}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2)
+        # Görüntüyü göster
+        if result["annotated_frame"] is not None:
+            cv2.imshow("Detection", result["annotated_frame"])
 
-        cv2.imshow("Görüntü", frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
 
+if __name__ == "__main__":
+    main()
     cv2.destroyAllWindows()
 main_loop()
