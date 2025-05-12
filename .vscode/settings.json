@@ -1,0 +1,11 @@
+{
+    // Terminal ayarları
+    "terminal.integrated.profiles.windows": {
+    "MSYS2": {
+        "path": "C:\\msys64\\ucrt64.exe",
+        "args": []
+    }
+},
+"terminal.integrated.defaultProfile.windows": "MSYS2",
+"C_Cpp.errorSquiggles": "disabled"
+}
