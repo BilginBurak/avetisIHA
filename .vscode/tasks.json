@@ -1,0 +1,28 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-o",
+                "rtsp_stream",
+                "rtsp_gstreamer.cpp",
+                "$(pkg-config --cflags --libs gstreamer-1.0 gstreamer-app-1.0 opencv4)"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "options": {
+                "shell": {
+                    "executable": "C:\\msys64\\ucrt64.exe",
+                    "args": []
+                },
+                "cwd": "C:\\Users\\fyusu\\OneDrive\\Masaüstü\\avetisIHA\\avetisIHA\\cpp_modules"
+            }
+        }
+    ]
+}
