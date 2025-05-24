@@ -4,12 +4,12 @@ from modules.filtering import preprocess_frame, get_dynamic_kernel, apply_morpho
 
 COLOR_RANGES = {
     "blue": {
-        "lower": np.array([100, 150, 0]),
-        "upper": np.array([140, 255, 255])
+        "lower": np.array([90, 50, 50]),
+        "upper": np.array([130, 255, 255])
     },
     "red": [
-        {"lower": np.array([0, 100, 100]), "upper": np.array([20, 255, 255])},
-        {"lower": np.array([160, 100, 100]), "upper": np.array([180, 255, 255])}
+        {"lower": np.array([0, 30, 30]), "upper": np.array([12, 255, 255])},
+        {"lower": np.array([170, 30, 30]), "upper": np.array([180, 255, 255])}
     ]
 }
 
@@ -25,9 +25,9 @@ def detect_shape(approx):
         str or None:  3 küşe için 'triangle',  5-7 köşe için 'hexagon', Değilse None.
     """
     vertices = len(approx)
-    if vertices == 3:
+    if vertices == 3 :
         return "triangle"
-    elif 5 <= vertices <= 7:
+    elif vertices == 6 :
         return "hexagon"
     return None
 
@@ -54,10 +54,15 @@ def process_frame(frame, area_threshold=500, debug=True):
     annotated_frame = frame.copy() if debug else None
 
     # Preprocess frame
-    frame = preprocess_frame(frame, blur_kernel_size=3)
+    frame = preprocess_frame(frame, blur_kernel_size=5)
 
     # HSV dünüşümü
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    # Histogram eşitleme (sadece V kanalına)
+    h, s, v = cv2.split(hsv)
+    v_eq = cv2.equalizeHist(v)
+    hsv = cv2.merge([h, s, v_eq])
 
     # Dinamik kernel alma
     img_area = frame.shape[0] * frame.shape[1]
