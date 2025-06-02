@@ -2,7 +2,7 @@ import cv2
 from modules.vision_engine import process_frame
 
 # Görselin dosya yolunu gir
-image_path = "test_images/test_image_2.jpg"
+image_path = "test_images/test_image_6.JPG"
 
 # Görseli yükle
 frame = cv2.imread(image_path)
@@ -12,8 +12,7 @@ if frame is None:
     exit()
 
 # Görüntüyü işleyelim
-result = process_frame(frame, area_threshold=100, debug=True)
-
+result = process_frame(frame, area_threshold=20, debug=True)
 # Sonuçları yazdır
 if result["detections"]:
     for detection in result["detections"]:
