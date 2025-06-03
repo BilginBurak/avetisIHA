@@ -8,11 +8,11 @@ import matplotlib.pyplot as plt
 import sys
 from tqdm import tqdm
 from sklearn.metrics import classification_report
-from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torch.utils.data import DataLoader, Subset
 from dataset.faster_rcnn_dataset import FasterRCNNDataset
 from torchvision.ops import box_iou
 from torch.utils.tensorboard import SummaryWriter
+from models.faster_rcnn_detector import get_fasterrcnn_model
 
 
 def collate_fn(batch):
@@ -83,29 +83,36 @@ def get_iou_matched_labels(all_pred_boxes, all_pred_labels, all_gt_boxes, all_gt
 
 
 def main():
-    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    EPOCHS = 20
-    BATCH_SIZE = 12
+    DEVICE = torch.device("cuda" if torch.cuda  .is_available() else "cpu")
+    EPOCHS = 50
+    BATCH_SIZE = 8
     NUM_WORKERS = 8
-    NUM_CLASSES = 3
     SAVE_DIR = "outputs_frcnn"
     os.makedirs(SAVE_DIR, exist_ok=True)
 
     train_dataset = FasterRCNNDataset("dataset/train/images", "dataset/train/labels")
     val_dataset   = FasterRCNNDataset("dataset/valid/images", "dataset/valid/labels")
-    train_dataset = Subset(train_dataset, range(200))
+    #train_dataset = Subset(train_dataset, range(200))
     #val_dataset = Subset(val_dataset, range(20))
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True,
                               num_workers=NUM_WORKERS,pin_memory=True, collate_fn=collate_fn)
     val_loader   = DataLoader(val_dataset, batch_size=1, shuffle=False,
                               num_workers=NUM_WORKERS,pin_memory=True, collate_fn=collate_fn)
 
-    model = fasterrcnn_resnet50_fpn(num_classes=NUM_CLASSES)
+    #MobileNetV3(enhızlı)
+    #model = get_fasterrcnn_model(num_classes=3, backbone_type="mobilenetv3", weights=True)
+    # sıfırdan eğitmek için weights FALSE
+
+    # veya daha hafif bir ResNet:
+    model = get_fasterrcnn_model(num_classes=3, backbone_type="resnet18", weights=True)
+
+    # Eğer eski haline dönmek istersen:
+    #model = get_fasterrcnn_model(num_classes=3, backbone_type="resnet50")
     model.to(DEVICE)
     optimizer = torch.optim.Adam([p for p in model.parameters() if p.requires_grad], lr=1e-4)
     # TensorBoard log klasörünü oluştur
 
-    log_dir = r"C:\TensorBoard\tensorboard_logs"
+    log_dir = "logs/tensorboard_frcnn/"
     writer = SummaryWriter(log_dir=log_dir)
 
     checkpoint_path = os.path.join(SAVE_DIR, "checkpoint.pth")

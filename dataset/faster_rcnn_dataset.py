@@ -22,7 +22,7 @@ class FasterRCNNDataset(Dataset):
                                                   .replace(".png", ".txt")
                                                   .replace(".jpeg", ".txt"))
 
-        TARGET_W, TARGET_H = 320, 180
+        #TARGET_W, TARGET_H = 320, 180
 
         img = cv2.imread(img_path)
         if img is None:
@@ -30,7 +30,7 @@ class FasterRCNNDataset(Dataset):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         # Yeniden boyutlandır
-        img = cv2.resize(img, (TARGET_W, TARGET_H))
+        #img = cv2.resize(img, (TARGET_W, TARGET_H))
         h, w = img.shape[:2]
 
         # Normalize et [0, 1] ve [H,W,C] → [C,H,W]
