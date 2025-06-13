@@ -15,3 +15,4 @@
 /.venv1/
 /.vscode/
 outputs_frcnn/*.pth
+outputs_frcnn/*.pt
