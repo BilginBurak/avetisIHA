@@ -1,38 +1,64 @@
 import torch
 import cv2
 import numpy as np
+import os
+import sys
 
-model = torch.jit.load("best_model_scripted.pt", map_location="cpu")
+# Kullanıcıdan model, video ve backbone seçimi iste
+MODEL_PATH = "best_model.pth"
+VIDEO_PATH = "/test_video/test_720P.mp4"  # Dosya yolunu tam olarak gir
+USE_CAMERA = False  # True yaparsan webcam ile çalışır
+
+# Model backbone (mobilenetv3 ile daha hızlı olur!)
+BACKBONE = "resnet18"
+NUM_CLASSES = 3
+
+# Frame atlama (ör: 2 = her 2 karede bir tahmin)
+SKIP_N = 4
+INPUT_WIDTH, INPUT_HEIGHT = 416, 234
+
+# Modeli yükle
+from models.faster_rcnn_detector import get_fasterrcnn_model
+model = get_fasterrcnn_model(num_classes=NUM_CLASSES, backbone_type=BACKBONE, weights=False)
+model.load_state_dict(torch.load(MODEL_PATH, map_location="cpu"))
 model.eval()
-video_path = "/test_video/test_720P.mp4"
-cap = cv2.VideoCapture(video_path)
-# cap = cv2.VideoCapture(0)  # USB veya Pi Camera için uygun id
 
-skip_n = 2      # Kaç frame’de bir tahmin yapılacak
+# Video veya kamera aç
+if USE_CAMERA:
+    cap = cv2.VideoCapture(0)
+    print("Kamera ile başlatıldı.")
+else:
+    if not os.path.isfile(VIDEO_PATH):
+        print(f"Video dosyası bulunamadı: {VIDEO_PATH}")
+        sys.exit(1)
+    cap = cv2.VideoCapture(VIDEO_PATH)
+    print(f"Video ile başlatıldı: {VIDEO_PATH}")
+
 frame_count = 0
 last_outputs = None
 
 while True:
     ret, frame = cap.read()
     if not ret:
-        print("Kamera okunamadı!")
+        print("Video veya kamera sonlandı/okunamıyor.")
         break
 
     frame_count += 1
 
-    if frame_count % skip_n == 1:  # Her skip_n frame’de bir tahmin yap
+    # Her SKIP_N karede bir inference yap
+    if frame_count % SKIP_N == 1:
         img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        img = cv2.resize(img, (416, 234))
+        img = cv2.resize(img, (INPUT_WIDTH, INPUT_HEIGHT))
         img_tensor = torch.from_numpy(img.astype(np.float32) / 255.0).permute(2, 0, 1)
         inputs = [img_tensor]
         with torch.no_grad():
             last_outputs = model(inputs)
 
-    # Sonuçları çizdir (her frame, eski sonuca göre)
+    # Sonuçları çizdir (eski veya yeni)
     if last_outputs is not None:
-        boxes = last_outputs[0]['boxes'].cpu().numpy()
-        scores = last_outputs[0]['scores'].cpu().numpy()
-        labels = last_outputs[0]['labels'].cpu().numpy()
+        boxes = last_outputs[0].get('boxes', []).cpu().numpy()
+        scores = last_outputs[0].get('scores', []).cpu().numpy()
+        labels = last_outputs[0].get('labels', []).cpu().numpy()
 
         for box, score, label in zip(boxes, scores, labels):
             if score > 0.5:
@@ -40,7 +66,12 @@ while True:
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (0,255,0), 2)
                 cv2.putText(frame, str(label), (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,0), 2)
 
-    cv2.imshow("Camera Detection", frame)
+    # FPS'yi görsel olarak göstermek için (isteğe bağlı)
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    if fps:
+        cv2.putText(frame, f"FPS: {fps:.1f}", (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,0,0), 2)
+
+    cv2.imshow("Detection", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
