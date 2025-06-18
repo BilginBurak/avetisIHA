@@ -12,3 +12,7 @@
 /.DS_Store
 /.idea_modules/
 /.venv/
+/.venv1/
+/.vscode/
+outputs_frcnn/*.pth
+outputs_frcnn/*.pt
