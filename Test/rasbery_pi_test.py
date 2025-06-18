@@ -1,8 +1,10 @@
 import torch
 import cv2
 import numpy as np
+from models.faster_rcnn_detector import get_fasterrcnn_model
 
-model = torch.jit.load("best_model_scripted.pt", map_location="cpu")
+model = get_fasterrcnn_model(num_classes=3, backbone_type="resnet18", weights=False)
+model.load_state_dict(torch.load("best_model.pth", map_location="cpu"))
 model.eval()
 video_path = "/test_video/test_720P.mp4"
 cap = cv2.VideoCapture(video_path)
