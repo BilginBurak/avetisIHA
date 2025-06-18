@@ -28,6 +28,7 @@ def detect_shape(approx):
     if vertices == 3 :
         return "triangle"
     elif vertices == 6 :
+
         return "hexagon"
     return None
 
@@ -56,6 +57,7 @@ def process_frame(frame, area_threshold=500, debug=True):
     # Preprocess frame
     frame = preprocess_frame(frame, blur_kernel_size=5)
 
+
     # HSV dünüşümü
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
@@ -63,6 +65,7 @@ def process_frame(frame, area_threshold=500, debug=True):
     h, s, v = cv2.split(hsv)
     v_eq = cv2.equalizeHist(v)
     hsv = cv2.merge([h, s, v_eq])
+
 
     # Dinamik kernel alma
     img_area = frame.shape[0] * frame.shape[1]

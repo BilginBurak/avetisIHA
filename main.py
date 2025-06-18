@@ -3,9 +3,9 @@ from modules.vision_engine import process_frame
 import cv2
 
 def main():
-    rtsp_url = "Test/test_images/İsimsiz video ‐ Clipchamp ile yapıldı.mp4"
+    rtsp_url = "rtsp://192.168.144.25:8554/main.264"
     for frame in get_camera_stream(rtsp_url):
-        result = process_frame(frame, area_threshold=50, debug=True)
+        result = process_frame(frame, area_threshold=500, debug=True)
 
         for detection in result["detections"]:
             print(f"Detected {detection['color']} {detection['shape']} at {detection['center']}")
