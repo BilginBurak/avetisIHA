@@ -100,11 +100,11 @@ def main():
                               num_workers=NUM_WORKERS,pin_memory=True, collate_fn=collate_fn)
 
     #MobileNetV3(enhızlı)
-    #model = get_fasterrcnn_model(num_classes=3, backbone_type="mobilenetv3", weights=True)
+    model = get_fasterrcnn_model(num_classes=3, backbone_type="mobilenetv3", weights=True)
     # sıfırdan eğitmek için weights FALSE
 
     # veya daha hafif bir ResNet:
-    model = get_fasterrcnn_model(num_classes=3, backbone_type="resnet18", weights=True)
+    #model = get_fasterrcnn_model(num_classes=3, backbone_type="resnet18", weights=True)
 
     # Eğer eski haline dönmek istersen:
     #model = get_fasterrcnn_model(num_classes=3, backbone_type="resnet50")
@@ -112,10 +112,10 @@ def main():
     optimizer = torch.optim.Adam([p for p in model.parameters() if p.requires_grad], lr=1e-4)
     # TensorBoard log klasörünü oluştur
 
-    log_dir = "logs/tensorboard_frcnn/"
+    log_dir = "logs/tensorboard_frcnnv3/"
     writer = SummaryWriter(log_dir=log_dir)
 
-    checkpoint_path = os.path.join(SAVE_DIR, "checkpoint.pth")
+    checkpoint_path = os.path.join(SAVE_DIR, "checkpointv3.pth")
     if os.path.exists(checkpoint_path):
         print(f">>> Checkpoint bulundu, eğitim devam ediyor: {checkpoint_path}")
         checkpoint = torch.load(checkpoint_path, map_location=DEVICE)
@@ -141,7 +141,7 @@ def main():
     start_time = time.time()
 
     # CSV için hazırla
-    csv_path = os.path.join(SAVE_DIR, "metrics.csv")
+    csv_path = os.path.join(SAVE_DIR, "metricsv3.csv")
     if start_epoch == 0:
         with open(csv_path, mode='w', newline='') as f:
             csv_writer = csv.writer(f)
@@ -216,7 +216,7 @@ def main():
         # En iyi model kaydı
         if f1 > best_f1:
             best_f1 = f1
-            torch.save(model.state_dict(), os.path.join(SAVE_DIR, "best_model.pth"))
+            torch.save(model.state_dict(), os.path.join(SAVE_DIR, "best_modelv3.pth"))
 
         # Checkpoint kaydı
         torch.save({
@@ -249,13 +249,13 @@ def main():
     plt.plot(val_losses, label="Val Loss")
     plt.title("Loss Over Epochs")
     plt.legend()
-    plt.savefig(os.path.join(SAVE_DIR, "loss_curve.png"))
+    plt.savefig(os.path.join(SAVE_DIR, "loss_curvev3.png"))
 
     plt.figure()
     plt.plot(val_f1_scores, label="F1 Score")
     plt.title("F1 Score Over Epochs")
     plt.legend()
-    plt.savefig(os.path.join(SAVE_DIR, "f1_score.png"))
+    plt.savefig(os.path.join(SAVE_DIR, "f1_scorev3.png"))
 
     print("\n📊 Classification Report (IoU > 0.5):")
     filtered_gt_labels, filtered_pred_labels = get_iou_matched_labels(
