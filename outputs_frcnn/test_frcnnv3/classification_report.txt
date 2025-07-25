@@ -1,0 +1,8 @@
+              precision    recall  f1-score   support
+
+     hexagon       0.99      1.00      1.00       474
+    triangle       0.90      0.99      0.94       612
+
+   micro avg       0.94      0.99      0.97      1086
+   macro avg       0.95      0.99      0.97      1086
+weighted avg       0.94      0.99      0.97      1086

@@ -6,8 +6,8 @@ from models.faster_rcnn_detector import get_fasterrcnn_model
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # MODELİ YÜKLE
-model = get_fasterrcnn_model(num_classes=3, backbone_type="resnet18", weights=False)
-model.load_state_dict(torch.load("outputs_frcnn/best_model.pth", map_location=DEVICE))
+model = get_fasterrcnn_model(num_classes=3, backbone_type="mobilenetv3", weights=False)
+model.load_state_dict(torch.load("outputs_frcnn/best_modelv3.pth", map_location=DEVICE))
 model.to(DEVICE)
 model.eval()
 
@@ -31,7 +31,7 @@ def predict_and_draw(frame, model, conf_thresh=0.5):
         cv2.putText(frame, text, (x1, max(15, y1-10)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,0), 2)
     return frame
 
-def process_video(video_path, output_path=None, conf_thresh=0.5):
+def process_video(video_path, output_path, conf_thresh=0.5):
     cap = cv2.VideoCapture(video_path)
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     width  = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -60,6 +60,6 @@ def process_video(video_path, output_path=None, conf_thresh=0.5):
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    video_path = "Test/test_images/test.mp4"  # <<< BURAYA VİDEO YOLUNU GİR
-    output_path = "outputs_frcnn/test_frcnn/prediction_output.mp4"  # Kaydedilmiş video istersen
+    video_path = "Test/test_video/Test_720P.mp4"  # <<< BURAYA VİDEO YOLUNU GİR
+    output_path = "outputs_frcnn/test_frcnnv3/prediction_outputv3.mp4"  # Kaydedilmiş video istersen
     process_video(video_path, output_path, conf_thresh=0.5)

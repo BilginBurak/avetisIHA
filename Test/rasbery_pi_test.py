@@ -5,22 +5,17 @@ import os
 import sys
 
 # Kullanıcıdan model, video ve backbone seçimi iste
-MODEL_PATH = "best_model.pth"
+MODEL_PATH = "best_model_scripted.pt"
 VIDEO_PATH = "/test_video/test_720P.mp4"  # Dosya yolunu tam olarak gir
 USE_CAMERA = False  # True yaparsan webcam ile çalışır
 
-# Model backbone (mobilenetv3 ile daha hızlı olur!)
-BACKBONE = "resnet18"
-NUM_CLASSES = 3
 
 # Frame atlama (ör: 2 = her 2 karede bir tahmin)
 SKIP_N = 4
 INPUT_WIDTH, INPUT_HEIGHT = 416, 234
 
 # Modeli yükle
-from models.faster_rcnn_detector import get_fasterrcnn_model
-model = get_fasterrcnn_model(num_classes=NUM_CLASSES, backbone_type=BACKBONE, weights=False)
-model.load_state_dict(torch.load(MODEL_PATH, map_location="cpu"))
+model = torch.jit.load(MODEL_PATH, map_location="cpu")
 model.eval()
 
 # Video veya kamera aç

@@ -22,7 +22,7 @@ def compute_iou(box1, box2):
     iou = interArea / float(box1Area + box2Area - interArea + 1e-8)
     return iou
 
-def evaluate_model(model, dataloader, iou_thresh=0.5, conf_thresh=0.5, num_classes=NUM_CLASSES, output_dir="outputs_frcnn/test_frcnn"):
+def evaluate_model(model, dataloader, iou_thresh=0.5, conf_thresh=0.5, num_classes=NUM_CLASSES, output_dir="outputs_frcnn/test_frcnnv3"):
     os.makedirs(output_dir, exist_ok=True)
 
     model.eval()
@@ -133,8 +133,8 @@ if __name__ == "__main__":
         test_dataset, batch_size=1, shuffle=False, collate_fn=lambda x: tuple(zip(*x))
     )
 
-    model = get_fasterrcnn_model(num_classes=NUM_CLASSES, backbone_type="resnet18", weights=False)
-    model.load_state_dict(torch.load("outputs_frcnn/best_model.pth", map_location=DEVICE))
+    model = get_fasterrcnn_model(num_classes=NUM_CLASSES, backbone_type="mobilenetv3", weights=False)
+    model.load_state_dict(torch.load("outputs_frcnn/best_modelv3.pth", map_location=DEVICE))
     model.to(DEVICE)
 
     evaluate_model(model, test_loader)
